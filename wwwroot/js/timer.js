@@ -1,28 +1,23 @@
-function UpdateTimer() {
-    let now = new Date();
-    let time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-
-    document.querySelector(".timer").innerHTML = time;
+function updateTimer() {
+    let currentValue = document.querySelector(".timer").innerHTML;
+    //document.querySelector('.timer').innerHTML = ++counter;
+    console.log(currentValue);
+    let minutes = currentValue.split(':')[0];
+    let seconds = currentValue.split(':')[1];
+    console.log(`${minutes}:${seconds}`);
 }
 
 function timerOn() {
-    let timerVal = document.querySelector(".timer").innerHTML;
-    console.log(timerVal);
-    isTurnedOn = !isTurnedOn;
+    if (!isTurnedOn) {
+        intervalFunction = setInterval(updateTimer, 1000);
+        document.querySelector('.timerBtn').value = "Stop";
+        isTurnedOn = true;
+    } else {
+        clearInterval(intervalFunction);
+        isTurnedOn = false;
+    }
 }
 
-function increment() {
-    i = ++i;
-    console.log(i);
-}
-
-let i = 0;
-let isTurnedOn = false;
-
-let int = setInterval(UpdateTimer, 1000);
-
-if (isTurnedOn) {
-    setInterval(increment, 1000);
-} else {
-    clearInterval(int);
-}
+let counter = 0;
+var isTurnedOn = false;
+var intervalFunction;
