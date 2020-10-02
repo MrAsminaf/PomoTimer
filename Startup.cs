@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PomoTimer.Data;
 
 namespace PomoTimer
 {
@@ -24,6 +25,10 @@ namespace PomoTimer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddEntityFrameworkNpgsql().AddDbContext<PomoTimerDbContext>(options => {
+                var connString = Configuration.GetConnectionString("PomoTimerDb");
+                options.UseNpgsql(connString);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
