@@ -32,7 +32,14 @@ namespace PomoTimer
                 var connString = Configuration.GetConnectionString("PomoTimerDb");
                 options.UseNpgsql(connString);
             });
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+            })
                 .AddEntityFrameworkStores<PomoTimerDbContext>()
                 .AddDefaultTokenProviders();
         }

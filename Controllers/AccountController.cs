@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PomoTimer.Models;
+using System.Threading.Tasks;
 
 namespace PomoTimer.Controllers
 {
@@ -22,6 +23,26 @@ namespace PomoTimer.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
+        }
+
+        public async Task<IActionResult> Register(Register model, string returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser()
+                {
+                    UserName = model.Email,
+                    Email = model.Email
+                };
+                var result = await userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToRoute("Home");
+                }
+            }
+            return View(model);
         }
     }
 }
