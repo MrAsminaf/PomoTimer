@@ -44,5 +44,11 @@ namespace PomoTimer.Controllers
             }
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Login()
+        {
+
+        }
     }
 }
