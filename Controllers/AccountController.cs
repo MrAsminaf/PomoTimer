@@ -25,8 +25,10 @@ namespace PomoTimer.Controllers
             return View();
         }
 
+        [HttpPost]
         public async Task<IActionResult> Register(Register model, string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser()
@@ -39,16 +41,49 @@ namespace PomoTimer.Controllers
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToRoute("Home");
+                    //return RedirectToRoute("Home");
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(HomeController.Index), "Home");
+                    }
                 }
             }
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login()
+        [HttpGet]
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, 
+                    model.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(HomeController.Index), "Home");
+                    }
+                }
+            }
+            return View(model);
         }
     }
 }
