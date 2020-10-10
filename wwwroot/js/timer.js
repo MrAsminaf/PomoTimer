@@ -1,3 +1,14 @@
+let counter = 0;
+var isTurnedOn = false;
+var intervalFunction;
+
+class UpdateStatsModel {
+    constructor(hours, minutes) {
+        this.Hours = hours;
+        this.Minutes = minutes;
+    }
+}
+
 function updateTimer() {
     let currentValue = document.querySelector(".timer").innerHTML;
     let minutes = currentValue.split(':')[0];
@@ -7,6 +18,7 @@ function updateTimer() {
         minutes = parseInt(minutes);
         --minutes;
         seconds = '59';
+        updateMinuteStats();
     }
     else {
         seconds = parseInt(seconds);
@@ -35,6 +47,25 @@ function timerOn() {
     }
 }
 
-let counter = 0;
-var isTurnedOn = false;
-var intervalFunction;
+function updateMinuteStats() {
+    const url = "http://localhost:5000/Timer/UpdateStats";
+
+    let data = new UpdateStatsModel(0, 1);
+
+    let fetchResponse = fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then((response) => {
+        if (response.status !== 200) {
+            throw new Error("Server doesn't respond");
+        }
+    }).catch((error) => {
+        console.log(error.message);
+    });
+
+    console.log(fetchResponse);
+}
