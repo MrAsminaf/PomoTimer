@@ -48,17 +48,13 @@ function timerOn() {
 }
 
 function updateMinuteStats() {
-    const url = "http://localhost:5000/Timer/UpdateStats";
+    const url = "https://localhost:5001/Timer/UpdateStats";
 
     let data = new UpdateStatsModel(0, 1);
 
     let fetchResponse = fetch(url, {
         method: 'POST',
         mode: 'cors',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
     }).then((response) => {
         if (response.status !== 200) {
             throw new Error("Server doesn't respond");

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PomoTimer.Data;
@@ -9,9 +10,10 @@ using PomoTimer.Data;
 namespace PomoTimer.Migrations
 {
     [DbContext(typeof(PomoTimerDbContext))]
-    partial class PomoTimerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201012174927_Added TimeSpan to user")]
+    partial class AddedTimeSpantouser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
