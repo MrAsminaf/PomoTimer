@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-light border border-dark">
+        <nav class="navbar navbar-expand-md navbar-dark">
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <div class="navbar-nav ml-auto">
                     @await Html.PartialAsync("_Login")
@@ -17,11 +17,7 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    @RenderBody()
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
