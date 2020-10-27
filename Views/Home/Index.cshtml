@@ -5,10 +5,15 @@
 <div class="container mainContainer">
     <main role="main" class="pb-3">
         <div class="text-center">
+            <br />
             <h4 class="pomodoroText">Pomodoro</h4>
             <p class="timer">25:01</p>
-            <input class="timerBtn" onclick="timerOn()" type="button"
-                   value="Start timer">
+            <div class="buttons">
+                <input class="timerBtn Btn" onclick="timerOn()" type="button"
+                       value="Start timer">
+                <input class="resetBtn Btn" onclick="reset()" type="button"
+                       value="Reset">
+            </div>
             <br />
             <br />
         </div>

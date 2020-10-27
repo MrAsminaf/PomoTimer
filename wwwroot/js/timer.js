@@ -47,6 +47,13 @@ function timerOn() {
     }
 }
 
+function reset() {
+    document.querySelector('.timer').innerHTML = "25:01";
+    document.querySelector('.timerBtn').value = "Start timer";
+    isTurnedOn = false;
+    clearInterval(intervalFunction);
+}
+
 function updateMinuteStats() {
     const url = "https://localhost:5001/Timer/UpdateStats";
 
