@@ -92,5 +92,11 @@ namespace PomoTimer.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UserDetails()
+        {
+            return View();
+        }
     }
 }

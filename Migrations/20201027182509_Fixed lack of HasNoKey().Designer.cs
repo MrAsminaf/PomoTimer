@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PomoTimer.Data;
@@ -9,9 +10,10 @@ using PomoTimer.Data;
 namespace PomoTimer.Migrations
 {
     [DbContext(typeof(PomoTimerDbContext))]
-    partial class PomoTimerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201027182509_Fixed lack of HasNoKey()")]
+    partial class FixedlackofHasNoKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,25 +268,17 @@ namespace PomoTimer.Migrations
 
             modelBuilder.Entity("PomoTimer.Models.ApplicationUser", b =>
                 {
-                    b.OwnsMany("PomoTimer.Models.TimeModel", "Minutes", b1 =>
+                    b.OwnsOne("System.Collections.Generic.List<PomoTimer.Models.TimeModel>", "Minutes", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("text");
 
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                            b1.Property<DateTime>("DateTime")
-                                .HasColumnType("timestamp without time zone");
-
-                            b1.Property<int>("minutes")
+                            b1.Property<int>("Capacity")
                                 .HasColumnType("integer");
 
-                            b1.HasKey("ApplicationUserId", "Id");
+                            b1.HasKey("ApplicationUserId");
 
-                            b1.ToTable("TimeModel");
+                            b1.ToTable("AspNetUsers");
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");

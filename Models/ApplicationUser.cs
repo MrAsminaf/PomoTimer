@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
-using System;
+using System.Collections.Generic;
 
 namespace PomoTimer.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public TimeSpan TimeSpan { get; set; } = new TimeSpan();
+        public List<TimeModel> Minutes { get; set; } = new List<TimeModel>();
     }
 }

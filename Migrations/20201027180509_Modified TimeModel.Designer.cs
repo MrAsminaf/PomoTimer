@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PomoTimer.Data;
@@ -9,9 +10,10 @@ using PomoTimer.Data;
 namespace PomoTimer.Migrations
 {
     [DbContext(typeof(PomoTimerDbContext))]
-    partial class PomoTimerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201027180509_Modified TimeModel")]
+    partial class ModifiedTimeModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,6 +215,24 @@ namespace PomoTimer.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PomoTimer.Models.TimeModel", b =>
+                {
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("minutes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DateTime");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("TimeModel");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -264,31 +284,11 @@ namespace PomoTimer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PomoTimer.Models.ApplicationUser", b =>
+            modelBuilder.Entity("PomoTimer.Models.TimeModel", b =>
                 {
-                    b.OwnsMany("PomoTimer.Models.TimeModel", "Minutes", b1 =>
-                        {
-                            b1.Property<string>("ApplicationUserId")
-                                .HasColumnType("text");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer")
-                                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                            b1.Property<DateTime>("DateTime")
-                                .HasColumnType("timestamp without time zone");
-
-                            b1.Property<int>("minutes")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("ApplicationUserId", "Id");
-
-                            b1.ToTable("TimeModel");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ApplicationUserId");
-                        });
+                    b.HasOne("PomoTimer.Models.ApplicationUser", null)
+                        .WithMany("Minutes")
+                        .HasForeignKey("ApplicationUserId");
                 });
 #pragma warning restore 612, 618
         }
