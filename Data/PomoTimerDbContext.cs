@@ -6,6 +6,8 @@ namespace PomoTimer.Data
 {
     public class PomoTimerDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<TimeModel> TimeModels { get; set; }
+
         public PomoTimerDbContext(DbContextOptions<PomoTimerDbContext> options)
             : base(options)
         {

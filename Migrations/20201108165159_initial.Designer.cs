@@ -10,8 +10,8 @@ using PomoTimer.Data;
 namespace PomoTimer.Migrations
 {
     [DbContext(typeof(PomoTimerDbContext))]
-    [Migration("20201027182509_Fixed lack of HasNoKey()")]
-    partial class FixedlackofHasNoKey
+    [Migration("20201108165159_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -215,6 +215,27 @@ namespace PomoTimer.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PomoTimer.Models.TimeModel", b =>
+                {
+                    b.Property<string>("TimeModelId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("minutes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("TimeModelId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("TimeModels");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -266,23 +287,11 @@ namespace PomoTimer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PomoTimer.Models.ApplicationUser", b =>
+            modelBuilder.Entity("PomoTimer.Models.TimeModel", b =>
                 {
-                    b.OwnsOne("System.Collections.Generic.List<PomoTimer.Models.TimeModel>", "Minutes", b1 =>
-                        {
-                            b1.Property<string>("ApplicationUserId")
-                                .HasColumnType("text");
-
-                            b1.Property<int>("Capacity")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("ApplicationUserId");
-
-                            b1.ToTable("AspNetUsers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ApplicationUserId");
-                        });
+                    b.HasOne("PomoTimer.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
                 });
 #pragma warning restore 612, 618
         }
