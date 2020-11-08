@@ -17,6 +17,9 @@ namespace PomoTimer.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<TimeModel>()
+                .Property(p => p.TimeModelId)
+                .ValueGeneratedOnAdd();
         }
     }
 }

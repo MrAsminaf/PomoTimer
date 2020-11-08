@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using Microsoft.Extensions.Logging;
+using PomoTimer.Data;
 using PomoTimer.Models;
 using System;
 using System.Linq;
@@ -17,11 +19,16 @@ namespace PomoTimer.Controllers
     {
         private readonly ILogger<TimerController> logger;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ITimeModelRepository timeModelRepository;
 
-        public TimerController(ILogger<TimerController> logger, UserManager<ApplicationUser> userManager)
+        public TimerController(
+            ILogger<TimerController> logger, 
+            UserManager<ApplicationUser> userManager,
+            ITimeModelRepository timeModelRepository)
         {
             this.logger = logger;
             this.userManager = userManager;
+            this.timeModelRepository = timeModelRepository;
         }
 
         [HttpPost]
@@ -38,6 +45,9 @@ namespace PomoTimer.Controllers
                     logger.LogInformation("Could not find user");
                     return BadRequest();
                 }
+
+                timeModelRepository.AddTimeToUser(user.Id, DateTime.Now, 1);
+                timeModelRepository.Save();
 
                 return Ok();
             }
