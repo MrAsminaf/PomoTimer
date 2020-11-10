@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PomoTimer.Data;
 using PomoTimer.Models;
 using System.Threading.Tasks;
 
@@ -9,13 +10,16 @@ namespace PomoTimer.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly ITimeModelRepository timerModelRepository;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ITimeModelRepository timerModelRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.timerModelRepository = timerModelRepository;
         }
 
         [HttpGet]
@@ -96,7 +100,10 @@ namespace PomoTimer.Controllers
         [HttpGet]
         public async Task<IActionResult> UserDetails()
         {
-            return View();
+            var user = await userManager.GetUserAsync(User);
+            var data = timerModelRepository.GetUserTimeModelsInLastWeek(user.Id);
+
+            return View(data);
         }
     }
 }

@@ -3,6 +3,8 @@ using PomoTimer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PomoTimer.Data
 {
@@ -26,7 +28,7 @@ namespace PomoTimer.Data
             {
                 TimeModel model = new TimeModel();
                 model.ApplicationUserId = id;
-                model.DateTime = dt;
+                model.DateTime = dt.Date;
                 model.minutes += minutes;
 
                 context.TimeModels.Add(model);
@@ -41,9 +43,9 @@ namespace PomoTimer.Data
                 return false;
             }
 
-            models.ToList().FindAll(o => o.DateTime.Equals(dt));
+            var result = models.ToList().FindAll(o => o.DateTime.Date == DateTime.Now.Date);
 
-            if (!models.Any())
+            if (!result.Any())
             {
                 return false;
             }
@@ -62,7 +64,32 @@ namespace PomoTimer.Data
 
         public TimeModel GetOneTimeModel(string id, DateTime dt)
         {
-            return context.TimeModels.ToList().FirstOrDefault(o => o.ApplicationUserId == id && o.DateTime == dt);
+            return context.TimeModels.ToList().FirstOrDefault(o => o.ApplicationUserId == id && o.DateTime.Date == dt.Date);
+        }
+
+        public IEnumerable<TimeModel> GetUserTimeModelsInLastWeek(string id)
+        {
+            var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
+                o.DateTime.Date >= DateTime.Now.Date.AddDays(-7));
+
+            //List<int> indexArr = new List<int>();
+            //if (result.Count() != 7)
+            //{
+            //    foreach (var day in result)
+            //    {
+            //        if (day.DateTime.DayOfWeek + 1 != result && day.DateTime.DayOfWeek.ToString() != "Sunday")
+            //        {
+            //            indexArr.Add(result.IndexOf(day));
+            //        }
+            //    }
+            //}
+
+            //foreach (var index in indexArr)
+            //{
+            //    result.Insert(index, new TimeModel { minutes = 0, DateTime = result.ElementAt(index + 1).DateTime.Date });
+            //}
+                
+            return result.OrderBy(x=>x.DateTime);
         }
 
         public void Save()
