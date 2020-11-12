@@ -7,12 +7,6 @@
     <canvas class="testChart" width="400" height="200"></canvas>
 </div>
 
-@foreach (var day in Model)
-{
-    <div style="color:white">@day.DateTime.DayOfWeek: @day.minutes</div>
-}
-
-<div style="color:white">@Model.ToList().ElementAt(1).DateTime</div>
 
 
 @section Scripts {
@@ -23,7 +17,7 @@
             data: {
                 labels: @Html.Raw(Json.Serialize(Model.Select(x=>x.DateTime.DayOfWeek.ToString()).ToList())),
                 datasets: [{
-            label: '# of Votes',
+            label: 'Minutes using PomoTimer',
             data: @Html.Raw(Json.Serialize(Model.Select(x=>x.minutes).ToList())),
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',

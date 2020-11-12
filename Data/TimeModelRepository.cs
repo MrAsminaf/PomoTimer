@@ -70,26 +70,31 @@ namespace PomoTimer.Data
         public IEnumerable<TimeModel> GetUserTimeModelsInLastWeek(string id)
         {
             var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
-                o.DateTime.Date >= DateTime.Now.Date.AddDays(-7));
+                o.DateTime.Date >= DateTime.Now.Date.AddDays(-6));
 
-            //List<int> indexArr = new List<int>();
-            //if (result.Count() != 7)
-            //{
-            //    foreach (var day in result)
-            //    {
-            //        if (day.DateTime.DayOfWeek + 1 != result && day.DateTime.DayOfWeek.ToString() != "Sunday")
-            //        {
-            //            indexArr.Add(result.IndexOf(day));
-            //        }
-            //    }
-            //}
+            List<TimeModel> final = new List<TimeModel>()
+            {
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-6), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-5), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-4), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-3), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-2), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-1), minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date, minutes = 0 },
+            };
 
-            //foreach (var index in indexArr)
-            //{
-            //    result.Insert(index, new TimeModel { minutes = 0, DateTime = result.ElementAt(index + 1).DateTime.Date });
-            //}
-                
-            return result.OrderBy(x=>x.DateTime);
+            foreach (var day in final)
+            {
+                foreach (var userDay in result)
+                {
+                    if (day.DateTime.Date == userDay.DateTime.Date)
+                    {
+                        day.minutes = userDay.minutes;
+                    }
+                }
+            }
+
+            return final.OrderBy(x=>x.DateTime);
         }
 
         public void Save()

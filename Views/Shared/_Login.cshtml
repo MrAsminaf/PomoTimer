@@ -5,15 +5,17 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
-        <ul class="nav navbar-right navbar-nav">
-            <li>
-                <a asp-controller="Account" asp-action="UserDetails">Hello @UserManager.GetUserName(User)</a>
-            </li>
-            <li>
-                <button class="logoutButton" type="submit">Log out</button>
-            </li>
-        </ul>
+    @if (Context.Request.Path.ToString().Substring(Context.Request.Path.ToString().LastIndexOf('/') + 1) == "UserDetails")
+    {
+        <form asp-controller="Home" asp-action="Index" method="post">
+            <button type="submit">
+                Go back
+            </button>
+        </form>
+    }
+    <form asp-controller="Account" asp-action="Logout" method="post" class="ml-auto">
+        <a asp-controller="Account" asp-action="UserDetails">Hello @UserManager.GetUserName(User)</a>
+        <button class="logoutButton" type="submit">Log out</button>
     </form>
 }
 else

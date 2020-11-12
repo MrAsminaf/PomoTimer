@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PomoTimer.Data;
 using PomoTimer.Models;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PomoTimer.Controllers
@@ -11,15 +13,18 @@ namespace PomoTimer.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly ITimeModelRepository timerModelRepository;
+        private readonly ILogger<AccountController> logger;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ITimeModelRepository timerModelRepository)
+            ITimeModelRepository timerModelRepository,
+            ILogger<AccountController> logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.timerModelRepository = timerModelRepository;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -102,6 +107,9 @@ namespace PomoTimer.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             var data = timerModelRepository.GetUserTimeModelsInLastWeek(user.Id);
+
+            var path = HttpContext.Request.Path.ToString().Substring(HttpContext.Request.Path.ToString().LastIndexOf('/') + 1);
+            logger.LogInformation(path);
 
             return View(data);
         }
