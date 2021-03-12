@@ -2,9 +2,9 @@ var isTurnedOn = false;
 var intervalFunction;
 
 class UpdateStatsModel {
-    constructor(hours, minutes) {
-        this.Hours = hours;
+    constructor(minutes, taskName) {
         this.Minutes = minutes;
+        this.TaskName = taskName;
     }
 }
 
@@ -62,11 +62,13 @@ function Reset() {
 function SendRequestToUpdateStats() {
     const url = "https://localhost:5001/Timer/UpdateStats";
 
-    let data = new UpdateStatsModel(0, 1);
+    let data = new UpdateStatsModel(1, "");
 
     let fetchResponse = fetch(url, {
         method: 'POST',
         mode: 'cors',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
     }).then((response) => {
         if (response.status !== 200) {
             throw new Error("Server doesn't respond");

@@ -10,6 +10,7 @@ namespace PomoTimer.Models
         public string ApplicationUserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
         public DateTime DateTime { get; set; }
-        public int minutes { get; set; } = 0;
+        public int Minutes { get; set; } = 0;
+        public string TaskName { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TimeModel>
+﻿@model IEnumerable< IEnumerable< TimeModel > >
 @{
     ViewData["Title"] = "Details";
 }
@@ -7,43 +7,40 @@
     <canvas class="testChart" width="400" height="200"></canvas>
 </div>
 
-
-
 @section Scripts {
     <script type="text/javascript">
         let context = document.querySelector('.testChart').getContext('2d');
         var myChart = new Chart(context, {
             type: 'bar',
             data: {
-                labels: @Html.Raw(Json.Serialize(Model.Select(x=>x.DateTime.DayOfWeek.ToString()).ToList())),
-                datasets: [{
-            label: 'Minutes using PomoTimer',
-            data: @Html.Raw(Json.Serialize(Model.Select(x=>x.minutes).ToList())),
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
+                labels: @Html.Raw( Json.Serialize ( Model.ElementAt(0).Select( x => x.DateTime.DayOfWeek.ToString() ).ToList() ) ),
+                datasets: [
+                    @foreach (var dataset in Model)
+                    {
+                        Random random = new Random();
+                        var r = random.Next(0, 255);
+                        var g = random.Next(0, 255);
+                        var b = random.Next(0, 255);
+                        @:{
+                            @:label: '@dataset.ElementAt(0).TaskName',
+                            @:data: @Html.Raw( Json.Serialize( dataset.Select( x => x.Minutes).ToList() ) ),
+                            @:backgroundColor: 'rgba(@r, @g, @b, 1)',
+                            @:borderColor: 'rgba(@r, @g, @b, 1)',
+                            @:borderWidth: 1
+                        @:},
+                    }
+                ]
             },
             options: {
                 scales: {
                     yAxes: [{
+                        stacked: true,
                         ticks: {
                             beginAtZero: true
                         }
+                    }],
+                    xAxes: [{
+                        stacked: true
                     }]
                 }
             }

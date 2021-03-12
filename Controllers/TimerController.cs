@@ -32,9 +32,12 @@ namespace PomoTimer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> updateStats()
+        public async Task<IActionResult> UpdateStats([FromBody]UpdateStatsModel model)
         {
             ClaimsPrincipal currentUser = this.User;
+
+            //logger.LogInformation($"Model minutes: {model.Minutes}");
+            //logger.LogInformation($"Model Task Name: {model.TaskName}");
 
             if (currentUser != null)
             {
@@ -46,7 +49,7 @@ namespace PomoTimer.Controllers
                     return BadRequest();
                 }
 
-                timeModelRepository.AddTimeToUser(user.Id, DateTime.Now, 1);
+                timeModelRepository.AddTimeToUser(user.Id, DateTime.Now, model);
                 timeModelRepository.Save();
 
                 return Ok();

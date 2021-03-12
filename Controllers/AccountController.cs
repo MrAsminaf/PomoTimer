@@ -111,10 +111,7 @@ namespace PomoTimer.Controllers
         public async Task<IActionResult> UserDetails()
         {
             var user = await userManager.GetUserAsync(User);
-            var data = timerModelRepository.GetUserTimeModelsInLastWeek(user.Id);
-
-            var path = HttpContext.Request.Path.ToString().Substring(HttpContext.Request.Path.ToString().LastIndexOf('/') + 1);
-            logger.LogInformation(path);
+            var data = timerModelRepository.GetUserTimeModelsInLastWeekGrouped(user.Id);
 
             return View(data);
         }

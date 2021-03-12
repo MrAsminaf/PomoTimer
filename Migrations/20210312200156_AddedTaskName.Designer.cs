@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PomoTimer.Data;
@@ -9,9 +10,10 @@ using PomoTimer.Data;
 namespace PomoTimer.Migrations
 {
     [DbContext(typeof(PomoTimerDbContext))]
-    partial class PomoTimerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210312200156_AddedTaskName")]
+    partial class AddedTaskName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,11 +227,11 @@ namespace PomoTimer.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Minutes")
-                        .HasColumnType("integer");
-
                     b.Property<string>("TaskName")
                         .HasColumnType("text");
+
+                    b.Property<int>("minutes")
+                        .HasColumnType("integer");
 
                     b.HasKey("TimeModelId");
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using PomoTimer.Models;
 using System;
 using System.Collections.Generic;
@@ -11,31 +12,34 @@ namespace PomoTimer.Data
     public class TimeModelRepository : ITimeModelRepository
     {
         private PomoTimerDbContext context;
+        private readonly ILogger<TimeModelRepository> logger;
 
-        public TimeModelRepository(PomoTimerDbContext context)
+        public TimeModelRepository(PomoTimerDbContext context, ILogger<TimeModelRepository> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
-        public void AddTimeToUser(string id, DateTime dt, int minutes)
+        public void AddTimeToUser(string id, DateTime dt, UpdateStatsModel model)
         {
-            if (CheckIfTimeModelExists(id, dt))
+            if (CheckIfTimeModelExists(id, dt, model.TaskName))
             {
-                var model = GetOneTimeModel(id, dt);
-                model.minutes += minutes;
+                var entry = GetOneTimeModel(id, dt, model.TaskName);
+                entry.Minutes += model.Minutes;
             }
             else
             {
-                TimeModel model = new TimeModel();
-                model.ApplicationUserId = id;
-                model.DateTime = dt.Date;
-                model.minutes += minutes;
+                TimeModel entry = new TimeModel();
+                entry.ApplicationUserId = id;
+                entry.DateTime = dt.Date;
+                entry.Minutes += model.Minutes;
+                entry.TaskName = model.TaskName;
 
-                context.TimeModels.Add(model);
+                context.TimeModels.Add(entry);
             }
         }
 
-        public bool CheckIfTimeModelExists(string id, DateTime dt)
+        public bool CheckIfTimeModelExists(string id, DateTime dt, string taskName)
         {
             var models = GetAllTimeModelsByUserId(id);
             if (models.Count() == 0)
@@ -43,7 +47,7 @@ namespace PomoTimer.Data
                 return false;
             }
 
-            var result = models.ToList().FindAll(o => o.DateTime.Date == DateTime.Now.Date);
+            var result = models.ToList().FindAll(o => o.DateTime.Date == DateTime.Now.Date && o.TaskName == taskName);
 
             if (!result.Any())
             {
@@ -62,25 +66,67 @@ namespace PomoTimer.Data
             return context.TimeModels.ToList().FindAll(o => o.ApplicationUserId == id);
         }
 
-        public TimeModel GetOneTimeModel(string id, DateTime dt)
+        public TimeModel GetOneTimeModel(string id, DateTime dt, string taskName)
         {
-            return context.TimeModels.ToList().FirstOrDefault(o => o.ApplicationUserId == id && o.DateTime.Date == dt.Date);
+            return context.TimeModels.ToList().FirstOrDefault(o => o.ApplicationUserId == id && o.DateTime.Date == dt.Date && o.TaskName == taskName);
         }
 
-        public IEnumerable<TimeModel> GetUserTimeModelsInLastWeek(string id)
+        public IEnumerable<IEnumerable<TimeModel>> GetUserTimeModelsInLastWeekGrouped(string id)
+        {
+            var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
+                o.DateTime.Date >= DateTime.Now.Date.AddDays(-6));
+
+            List<List< TimeModel >> outer = new List<List< TimeModel >>();
+
+            var taskNames = result.Select(x => x.TaskName).Distinct();
+
+            foreach (var taskName in taskNames)
+            {
+                var timeModelsFilteredByTaskName = result.OrderBy(x => x.DateTime )
+                    .Where(x => x.TaskName == taskName);
+
+                
+                List<TimeModel> inner = new List<TimeModel>()
+                {
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-6), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-5), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-4), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-3), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-2), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date.AddDays(-1), Minutes = 0, TaskName = taskName },
+                    new TimeModel { DateTime = DateTime.Now.Date, Minutes = 0, TaskName = taskName },
+                };
+
+                foreach (var uninitDay in inner)
+                {
+                    foreach (var dayInDatabase in timeModelsFilteredByTaskName)
+                    {
+                        if (uninitDay.DateTime.Date == dayInDatabase.DateTime.Date)
+                        {
+                            uninitDay.Minutes += dayInDatabase.Minutes;
+                        }
+                    }
+                }
+                outer.Add(inner);
+            }
+
+            return outer;
+        }
+
+        public IEnumerable<TimeModel> GetUserTimeModelsInLastWeekSummed(string id)
         {
             var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
                 o.DateTime.Date >= DateTime.Now.Date.AddDays(-6));
 
             List<TimeModel> final = new List<TimeModel>()
             {
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-6), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-5), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-4), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-3), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-2), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-1), minutes = 0 },
-                new TimeModel { DateTime = DateTime.Now.Date, minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-6), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-5), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-4), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-3), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-2), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date.AddDays(-1), Minutes = 0 },
+                new TimeModel { DateTime = DateTime.Now.Date, Minutes = 0 },
             };
 
             foreach (var day in final)
@@ -89,7 +135,7 @@ namespace PomoTimer.Data
                 {
                     if (day.DateTime.Date == userDay.DateTime.Date)
                     {
-                        day.minutes = userDay.minutes;
+                        day.Minutes += userDay.Minutes;
                     }
                 }
             }
