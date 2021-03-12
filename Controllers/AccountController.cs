@@ -91,6 +91,11 @@ namespace PomoTimer.Controllers
                         return RedirectToAction(nameof(HomeController.Index), "Home");
                     }
                 }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                    return View();
+                }
             }
             return View(model);
         }

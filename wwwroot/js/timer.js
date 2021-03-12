@@ -1,4 +1,3 @@
-let counter = 0;
 var isTurnedOn = false;
 var intervalFunction;
 
@@ -9,33 +8,39 @@ class UpdateStatsModel {
     }
 }
 
-function updateTimer() {
+function UpdateTimer() {
     let currentValue = document.querySelector(".timer").innerHTML;
     let minutes = currentValue.split(':')[0];
     let seconds = currentValue.split(':')[1];
 
-    if (seconds == '00') {
-        minutes = parseInt(minutes);
-        --minutes;
-        seconds = '59';
-        updateMinuteStats();
-    }
-    else {
-        seconds = parseInt(seconds);
-        --seconds;
+    if (currentValue == '00:00') {
+        SwitchTimer();
+        Reset();
+        SendRequestToUpdateStats();
+
+        return;
     }
 
-    if (parseInt(seconds) < 10){
-        seconds = `0${seconds}`;
+    if (seconds == '00') {
+        minutes = parseInt(minutes) - 1;
+        seconds = '59';
+        SendRequestToUpdateStats();
+    }
+    else {
+        seconds = parseInt(seconds) - 1;
+
+        if (seconds < 10){
+            seconds = `0${seconds}`;
+        }
     }
 
     document.querySelector('.timer').innerHTML = 
         `${minutes}:${seconds}`;
 }
 
-function timerOn() {
+function SwitchTimer() {
     if (!isTurnedOn) {
-        intervalFunction = setInterval(updateTimer, 1000);
+        intervalFunction = setInterval(UpdateTimer, 1000);
         document.querySelector('.timerBtn').value = "Stop";
         isTurnedOn = true;
         console.log("On");
@@ -47,14 +52,14 @@ function timerOn() {
     }
 }
 
-function reset() {
-    document.querySelector('.timer').innerHTML = "25:01";
+function Reset() {
+    document.querySelector('.timer').innerHTML = "25:00";
     document.querySelector('.timerBtn').value = "Start timer";
     isTurnedOn = false;
     clearInterval(intervalFunction);
 }
 
-function updateMinuteStats() {
+function SendRequestToUpdateStats() {
     const url = "https://localhost:5001/Timer/UpdateStats";
 
     let data = new UpdateStatsModel(0, 1);
