@@ -115,8 +115,7 @@ namespace PomoTimer.Data
 
         public IEnumerable<TimeModel> GetUserTimeModelsInLastWeekSummed(string id)
         {
-            var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
-                o.DateTime.Date >= DateTime.Now.Date.AddDays(-6));
+            var result = GetUserTimeModelsInLastWeek(id);
 
             List<TimeModel> final = new List<TimeModel>()
             {
@@ -140,7 +139,43 @@ namespace PomoTimer.Data
                 }
             }
 
-            return final.OrderBy(x=>x.DateTime);
+            return final.OrderBy(x => x.DateTime);
+        }
+
+        public IEnumerable<TimeModel> GetUserTimeModelsInLastWeek(string id)
+        {
+            var result = GetAllTimeModelsByUserId(id).ToList().FindAll(o => 
+                o.DateTime.Date >= DateTime.Now.Date.AddDays(-6));
+
+            return result;
+        }
+
+        public void AddTask(string id, string taskName, int minutes, DateTime dt)
+        {
+            if (CheckIfTimeModelExists(id, dt, taskName))
+            {
+                var timeModel = GetOneTimeModel(id, dt, taskName);
+
+                if (minutes > timeModel.Minutes) { return; }
+
+                timeModel.Minutes += minutes;
+            }
+            else
+            {
+                TimeModel timeModel = new TimeModel();
+                timeModel.ApplicationUserId = id;
+                timeModel.DateTime = dt;
+                timeModel.Minutes = minutes;
+                timeModel.TaskName = taskName;
+            }
+
+            var defaultTimeModel = GetOneTimeModel(id, dt, "");
+            defaultTimeModel.Minutes -= minutes;
+                
+            if (defaultTimeModel.Minutes == 0)
+            {
+                context.Remove(defaultTimeModel);
+            }
         }
 
         public void Save()

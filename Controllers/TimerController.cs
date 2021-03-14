@@ -36,9 +36,6 @@ namespace PomoTimer.Controllers
         {
             ClaimsPrincipal currentUser = this.User;
 
-            //logger.LogInformation($"Model minutes: {model.Minutes}");
-            //logger.LogInformation($"Model Task Name: {model.TaskName}");
-
             if (currentUser != null)
             {
                 var user = await userManager.GetUserAsync(currentUser);

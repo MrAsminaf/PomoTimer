@@ -1,11 +1,27 @@
-﻿@model IEnumerable< IEnumerable< TimeModel > >
+﻿@model UserDetailsViewModel
 @{
     ViewData["Title"] = "Details";
 }
 
 <div class="container">
     <canvas class="testChart" width="400" height="200"></canvas>
+    <table>
+        @foreach (var item in Model.TimeModelsLastWeekEmpty)
+        {
+            <tr>
+                <td>@item.DateTime.DayOfWeek.ToString(): </td>
+                <td> @item.Minutes</td>
+                <td><input type="number" placeholder="Minutes"/></td>
+                <td><input type="text" placeholder="Task Name"/></td>
+            </tr>
+        }
+    </table>
+    <input type="button" value="Save" onclick="SaveTaskName()"/>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/userDetails.css"/>
+}
 
 @section Scripts {
     <script type="text/javascript">
@@ -13,9 +29,9 @@
         var myChart = new Chart(context, {
             type: 'bar',
             data: {
-                labels: @Html.Raw( Json.Serialize ( Model.ElementAt(0).Select( x => x.DateTime.DayOfWeek.ToString() ).ToList() ) ),
+                labels: @Html.Raw( Json.Serialize ( Model.TimeModelsLastWeekGrouped.ElementAt(0).Select( x => x.DateTime.DayOfWeek.ToString() ).ToList() ) ),
                 datasets: [
-                    @foreach (var dataset in Model)
+                    @foreach (var dataset in Model.TimeModelsLastWeekGrouped)
                     {
                         Random random = new Random();
                         var r = random.Next(0, 255);
@@ -45,5 +61,10 @@
                 }
             }
         });
+
+        SaveTaskName = () => {
+            
+        }
+
     </script>
 }

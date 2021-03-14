@@ -111,9 +111,21 @@ namespace PomoTimer.Controllers
         public async Task<IActionResult> UserDetails()
         {
             var user = await userManager.GetUserAsync(User);
-            var data = timerModelRepository.GetUserTimeModelsInLastWeekGrouped(user.Id);
 
-            return View(data);
+            UserDetailsViewModel viewModel = new UserDetailsViewModel();
+            viewModel.TimeModelsLastWeekGrouped = timerModelRepository.GetUserTimeModelsInLastWeekGrouped(user.Id);;
+            viewModel.TimeModelsLastWeekEmpty = timerModelRepository.GetUserTimeModelsInLastWeek(user.Id)
+                .Where(x => x.TaskName == "")
+                .OrderBy(x => x.DateTime);
+
+            return View(viewModel);
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> AddTask()
+        {
+            logger.LogInformation("Added task");
+            return Ok();
         }
     }
 }

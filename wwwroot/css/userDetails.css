@@ -1,0 +1,11 @@
+body {
+    color: white;
+}
+
+table {
+    margin-top: 50px;
+}
+
+table, td {
+    padding: 5px;
+}
